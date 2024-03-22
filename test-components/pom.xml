@@ -1,0 +1,140 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.hoopladigital</groupId>
+	<artifactId>test-components</artifactId>
+	<version>2.1.3-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>test-components</name>
+	<url>https://console.aws.amazon.com/codecommit/home?region=us-east-1#/repository/test-components/</url>
+
+	<parent>
+		<artifactId>hoopla-parent</artifactId>
+		<groupId>com.hoopladigital</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<scm>
+		<connection>scm:git:ssh://hoopla-codecommit/v1/repos/test-components</connection>
+		<developerConnection>scm:git:ssh://hoopla-codecommit/v1/repos/test-components</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-MM-dd-HH.mm.ss</maven.build.timestamp.format>
+		<mockito.version>3.12.4</mockito.version>
+	</properties>
+
+	<dependencies>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.12</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- apache commons -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.9</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
+			<version>${mockito.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<version>${mockito.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<version>2.2</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version>
+				<inherited>true</inherited>
+				<configuration>
+					<release>11</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-scm-plugin</artifactId>
+				<version>1.9</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.15</version>
+				<configuration>
+					<configLocation>http://com.hoopladigital.web.s3.amazonaws.com/configurations/checkstyle.xml</configLocation>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.amashchenko.maven.plugin</groupId>
+				<artifactId>gitflow-maven-plugin</artifactId>
+				<version>1.14.0</version>
+				<configuration>
+					<postReleaseGoals>deploy</postReleaseGoals>
+					<pushRemote>false</pushRemote>
+				</configuration>
+			</plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.kuali.maven.wagons</groupId>
+				<artifactId>maven-s3-wagon</artifactId>
+				<version>1.2.1</version>
+			</extension>
+		</extensions>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>midwest.release</id>
+			<name>midwest-release</name>
+			<url>s3://maven.midwesttape.com/release/</url>
+		</repository>
+		<snapshotRepository>
+			<id>midwest.snapshot</id>
+			<name>midwest-snapshot</name>
+			<url>s3://maven.midwesttape.com/snapshot/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<prerequisites>
+		<maven>3.5</maven>
+	</prerequisites>
+
+</project>
