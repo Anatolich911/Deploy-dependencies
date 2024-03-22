@@ -1,0 +1,45 @@
+name: Build dependencies
+on:
+  push:
+    branches: [ "development" ]
+    paths-ignore: [ "README.md", ".gitignore", ".github/**" ]
+  workflow_dispatch:
+  
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+  
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+     
+      # Runs a single command using the runners shell
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin' 
+
+      - name: Version setup
+        run: |
+          export SHA=$(echo "${{ github.sha }}" | cut -c 1-6)
+          echo "SHA=$SHA" >> $GITHUB_ENV
+          export VERSION=`cd media-ws && mvn -B org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -Ev '(^\[|\w+:)'`
+          export TIMESTAMP=`date +"%Y-%m-%d-%H.%M.%S"`
+          export VERSION_LABEL="${VERSION}-${SHA}-${TIMESTAMP}"
+          echo "VERSION_LABEL=$VERSION_LABEL" >> "$GITHUB_ENV"
+
+      - name: Build
+        run:  mvn deploy -DskipTests -Dversion.label=$VERSION_LABEL -Denvironment=DEV
